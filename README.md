@@ -5,6 +5,10 @@ Send your syslogs to the latest version of the ELK (Elasticsearch, Logstash, Kib
 
 It will give you the ability to analyze syslogs from IOS-XR, IOS-XE, and NX-OS devices. data set by using the searching/aggregation capabilities of Elasticsearch and the visualization power of Kibana.
 
+## Fork
+
+Updated kibana to latest OSS for security and usability features. Edited config to match updated version and change some ports to better match default Cisco configs.
+
 
 ## Acknowledgements
 
