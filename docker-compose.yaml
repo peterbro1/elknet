@@ -1,5 +1,4 @@
-version: '2'
-
+version: '3.8'
 services:
 
 # not sure if we will need this
@@ -17,7 +16,8 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
-      - elk
+      - flesk
+    hostname: "elasticsearch"
 
   logstash:
     build:
@@ -26,16 +26,16 @@ services:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
       - ./logstash/patterns:/opt/logstash/patterns
-
     ports:
       - "514:514/udp"
-
+      - "534:534/udp"
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
-      - elk
+      - flesk
     depends_on:
       - elasticsearch
+    hostname: "logstash"
 
   kibana:
     build:
@@ -43,14 +43,33 @@ services:
     volumes:
       - ./kibana/config/:/usr/share/kibana/config:ro
     ports:
-      - "5601:5601"
+      - "5601:5601/tcp"
     networks:
-      - elk
+      - flesk
     depends_on:
       - elasticsearch
+    hostname: "kibana"
+
+#  filebeat:
+#    build:
+#      context: filebeat/
+#    volumes:
+#      - ./filebeat/modules/:/usr/share/filebeat/module/
+#      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+#    ports:
+#      - "535:535/udp"
+#    networks:
+#      - flesk
+#    depends_on:
+#      - kibana
+#      - logstash
+#    #command: ["./wait-for-it.sh", "db:5432", "--", "python", "app.py"]
+#    entrypoint: bash -c 'export PATH=$PATH:/usr/share/filebeat && /usr/local/bin/docker-entrypoint -e'
+#    #Because docker compose has terrible support and does not recognize service readiness
+#    restart: on-failure:10
 
 # put the nodes on the host network so that source ips are retained
 networks:
 
-  elk:
+  flesk:
     driver: bridge
