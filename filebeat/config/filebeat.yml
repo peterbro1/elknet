@@ -1,58 +1,14 @@
 filebeat.inputs:
-
-# Each - is an input. Most options can be set at the input level, so
-# you can use different inputs for various configurations.
-# Below are the input specific configurations.
-
-# filestream is an input for collecting log messages from files.
-- type: filestream
-
-  # Change to true to enable this input configuration.
-  enabled: false
-
-  # Paths that should be crawled and fetched. Glob based paths.
+- type: log
+  enabled: true
   paths:
-    - /var/log/*.log
-    #- c:\programdata\elasticsearch\logs\*
+    - /var/log/suricata/eve.json
 
-filebeat.modules:
-  - module: cisco
-    ftd:
-      enabled: true
-      var.input: syslog
-      var.syslog_host: 0.0.0.0
-      var.syslog_port: 535
-    umbrella:
-      enabled: false
-    amp:
-      enabled: false
-    nexus:
-      enabled: false
-        
-filebeat.config.modules:
-  # Glob pattern for configuration loading
-  path: ${path.config}/modules.d/*.yml
+  fields:
+    event.type: 
 
-  # Set to true to enable config reloading
-  reload.enabled: false
-
-  # Period on which files under path should be checked for changes
-  #reload.period: 10s
-
-# ======================= Elasticsearch template setting =======================
-
-setup.template.settings:
-  index.number_of_shards: 1
-  #index.codec: best_compression
-  #_source.enabled: false
-
-
-setup.dashboards.enabled: true
-setup.kibana:
-
-  host: "kibana:5601"
-  ssl.verification_mode: none
-
-output.elasticsearch:
-  # Array of hosts to connect to.
-  hosts: ["elasticsearch:9200"]
+output.logstash:
+  hosts: ["logstash:535"]
+  #ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  #ssl.certificate: "/etc/pki/client/cert.pem"
+  #ssl.key: "/etc/pki/client/cert.key"
